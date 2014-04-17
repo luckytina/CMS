@@ -35,20 +35,11 @@ void CMS::Menu() {
 			cout << "Good bye~~" << endl; 
 			system("pause"); 
 			exit(0); 
-		case '1': 
-			Reveal(); 
-			break; 
-		case '2': 
-			Insert(); 
-			break; 
-		case '3': 
-			Update(); 
-			break; 
-		case '4': 
-			Delete(); 
-			break; 
-		default: 
-			break; 
+		case '1': Reveal(); break; 
+		case '2': Insert(); break; 
+		case '3': Update(); break; 
+		case '4': Delete(); break; 
+		default: break; 
 		}
 	}
 
@@ -401,12 +392,14 @@ int CMS::check_email(const string email) {
 	else {
 		string userid = email.substr(0, atpos); 
 		string domain = email.substr(atpos + 1, email.length() - atpos - 1); 
-		for (char& ch : userid) {
+		//for (char& ch : userid) {
+		for each (const char ch in userid) {
 			if (!isalnum(ch)) {
 				return -2; 
 			}
 		}
-		for (char& ch : domain) {
+		//for (char& ch : domain) {
+		for each (const char ch in domain) {
 			if (!isalnum(ch) && ch != '.') {
 				return -3; 
 			}
