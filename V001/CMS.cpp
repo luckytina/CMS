@@ -4,6 +4,8 @@
 #include <iostream> 
 #include <conio.h> 
 #include <cctype> 
+#include <cstring> 
+#include <Windows.h> 
 
 // 构造函数，初始化最大容量，调用系统菜单
 CMS::CMS(unsigned max) {
@@ -18,6 +20,11 @@ CMS::~CMS() {
 	return; 
 }
 
+// *******************************************
+// 用户交互层
+// *******************************************
+
+// 系统菜单，根据输入调用功能函数
 void CMS::Menu() { 
 
 	while (true) {
@@ -33,19 +40,20 @@ void CMS::Menu() {
 		switch (_getch()) {
 		case '0': 
 			cout << "Good bye~~" << endl; 
-			system("pause"); 
+			Sleep(1000); 
 			exit(0); 
 		case '1': Reveal(); break; 
 		case '2': Insert(); break; 
 		case '3': Update(); break; 
 		case '4': Delete(); break; 
-		default: break; 
+		default: break; // 继续循环直至输入正确
 		}
 	}
 
 	return; 
 }
 
+// 分类显示功能
 void CMS::Reveal() {
 	cout << "Please select the class to reveal: " << endl
 		<< "1. Office" << endl
@@ -61,39 +69,46 @@ void CMS::Reveal() {
 			while ((index = Search("pc", "Office")) != -1) {
 				Reveal(index); 
 			}
-			cout << "End of reveal." << endl; 
+			cout << endl
+				<< "End of reveal." << endl
+				<< "Press any key to continue. " << endl; 
 			_getch(); 
 			return; 
 		case '2': 
 			while ((index = Search("pc", "Personal")) != -1) {
 				Reveal(index); 
 			}
-			cout << "End of reveal." << endl;
+			cout << endl
+				<< "End of reveal." << endl
+				<< "Press any key to continue. " << endl;
 			_getch();
 			return;
 		case '3': 
 			while ((index = Search("pc", "Business")) != -1) {
 				Reveal(index); 
 			}
-			cout << "End of reveal." << endl;
+			cout << endl
+				<< "End of reveal." << endl
+				<< "Press any key to continue. " << endl;
 			_getch();
 			return;
 		default:
-			break; // 继续循环直至输入正确
+			break; 
 		}
 	}
 }
 
+// 新加联系人
 void CMS::Insert() {
 	string name, tel, pc, email; 
 	do {
 		cout << "Please enter the person name: ";
 		cin >> name;
-	} while (ChkInput("name", name)); 
+	} while (ChkInput("name", name) || (Search("name", name) != -1)); 
 	do {
 		cout << "Please enter the telephone number: "; 
 		cin >> tel; 
-	} while (ChkInput("tel", tel)); 
+	} while (ChkInput("tel", tel) || (Search("tel", tel) != -1));
 	do {
 		cout << "Please enter the personal class: "; 
 		cin >> pc; 
@@ -101,10 +116,11 @@ void CMS::Insert() {
 	do {
 		cout << "Please enter the email address: "; 
 		cin >> email; 
-	} while (ChkInput("email", email)); 
+	} while (ChkInput("email", email) || (Search("email", email) != -1));
 	Insert(name, tel, pc, email); 
 }
 
+// 更新联系人信息
 void CMS::Update() {
 	string query; 
 	cout << "Please select the query dependancy: " << endl
@@ -137,6 +153,7 @@ void CMS::Update() {
 	}
 }
 
+// 删除指定联系人
 void CMS::Delete() {
 	string query; 
 	cout << "Please select the query dependancy: " << endl
@@ -169,6 +186,11 @@ void CMS::Delete() {
 	}
 }
 
+// *******************************************
+// 调用关系转换层
+// *******************************************
+
+// 解析flag并据query进行查询，若未找到返回-1，否则返回下标
 int CMS::Search(const string flag, const string query) {
 	if (flag == "name") {
 		return search_by_name(query); 
@@ -190,6 +212,7 @@ int CMS::Search(const string flag, const string query) {
 	}
 }
 
+// 若数据库未满则插入联系人信息
 int CMS::Insert(const string name, const string tel, const string pc, const string email) {
 	if (database.size() == maxsize) {
 		cout << "Unable to add a new contact. " << endl
@@ -202,8 +225,13 @@ int CMS::Insert(const string name, const string tel, const string pc, const stri
 	}
 }
 
+// 更新指定下标的联系人信息
 int CMS::Update(int index) {
 	if (index == -1) {
+		cout << endl
+			<< "Can not find the specified contact! " << endl
+			<< "Press any key to continue. " << endl; 
+		_getch(); 
 		return -1; 
 	}
 	else {
@@ -222,14 +250,14 @@ int CMS::Update(int index) {
 				do {
 					cout << "Please enter the new name: ";
 					cin >> update;
-				} while (ChkInput("name", update));
+				} while (ChkInput("name", update) || (Search("name", update) != -1));
 				database[index].SetName(update);
 				return 0;
 			case '2':
 				do {
 					cout << "Please enter the new telephone number: ";
 					cin >> update;
-				} while (ChkInput("tel", update));
+				} while (ChkInput("tel", update) || (Search("tel", update) != -1));
 				database[index].SetTel(update);
 				return 0;
 			case '3':
@@ -243,7 +271,7 @@ int CMS::Update(int index) {
 				do {
 					cout << "Please enter the new email address: ";
 					cin >> update;
-				} while (ChkInput("email", update));
+				} while (ChkInput("email", update) || (Search("email", update) != -1));
 				database[index].SetEmail(update);
 				return 0;
 			default:
@@ -253,9 +281,14 @@ int CMS::Update(int index) {
 	}
 }
 
+// 删除指定下标联系人
 int CMS::Delete(int index) {
 	if (index == -1) {
-		return -1; 
+		cout << endl
+			<< "Can not find the specified contact! " << endl
+			<< "Press any key to continue. " << endl;
+		_getch();
+		return -1;
 	}
 	else {
 		database.erase(database.begin() + index); 
@@ -263,13 +296,16 @@ int CMS::Delete(int index) {
 	}
 }
 
+// 显示指定下标联系人
 int CMS::Reveal(int index) {
 	if (index == -1) {
 		return -1; 
 	}
 	else {
 		Person& p = database[index]; 
-		cout << "Name: " << p.GetName() << endl
+		cout << endl 
+			<< "No." << index + 1 << endl
+			<< "Name: " << p.GetName() << endl
 			<< "Telephone number: " << p.GetTel() << endl
 			<< "Personal class: " << p.GetPC() << endl
 			<< "Email address: " << p.GetEmail() << endl;
@@ -277,6 +313,7 @@ int CMS::Reveal(int index) {
 	}
 }
 
+// 解析flag并对输入进行检验，检验通过返回0，否则返回错误码
 int CMS::ChkInput(const string flag, string& input) {
 	if (flag == "name") {
 		return check_name(input); 
@@ -298,15 +335,21 @@ int CMS::ChkInput(const string flag, string& input) {
 	}
 }
 
+// *******************************************
+// 功能实现层
+// *******************************************
+
+// 根据姓名查找
 int CMS::search_by_name(const string name) {
 	for (unsigned i = 0; i < database.size(); i++) {
-		if (database[i].GetName() == name) {
+		if (cmp_ignore_case(database[i].GetName(), name)) {
 			return i; 
 		}
 	}
 	return -1; 
 }
 
+// 根据手机号查找
 int CMS::search_by_tel(const string tel) {
 	for (unsigned i = 0; i < database.size(); i++) {
 		if (database[i].GetTel() == tel) {
@@ -316,6 +359,7 @@ int CMS::search_by_tel(const string tel) {
 	return -1; 
 }
 
+// 根据类别查找
 int CMS::search_by_pc(const string pc) {
 	static unsigned i = 0; 
 	for (; i < database.size(); i++) {
@@ -327,15 +371,17 @@ int CMS::search_by_pc(const string pc) {
 	return -1; 
 }
 
+// 根据邮箱查找
 int CMS::search_by_email(const string email) {
 	for (unsigned i = 0; i < database.size(); i++) {
-		if (database[i].GetEmail() == email) {
+		if (cmp_ignore_case(database[i].GetEmail(), email)) {
 			return i; 
 		}
 	}
 	return -1; 
 }
 
+// 检验姓名
 int CMS::check_name(const string name) {
 	for (unsigned i = 0; i < name.length(); i++) {
 		if (!isalpha(name[i])) {
@@ -345,6 +391,7 @@ int CMS::check_name(const string name) {
 	return 0; 
 }
 
+// 检验手机号
 int CMS::check_tel(const string tel) {
 	if (tel.length() != 11) {
 		return -1; 
@@ -362,6 +409,7 @@ int CMS::check_tel(const string tel) {
 	}
 }
 
+// 检验类别
 int CMS::check_pc(string& pc) {
 	if (pc == "Office" || pc == "office" || pc == "O" || pc == "o") {
 		pc = "Office";
@@ -384,6 +432,7 @@ int CMS::check_pc(string& pc) {
 	}
 }
 
+// 检验邮箱
 int CMS::check_email(const string email) {
 	int atpos = email.find('@'); 
 	if (atpos == string::npos) {
@@ -392,13 +441,11 @@ int CMS::check_email(const string email) {
 	else {
 		string userid = email.substr(0, atpos); 
 		string domain = email.substr(atpos + 1, email.length() - atpos - 1); 
-		//for (char& ch : userid) {
 		for each (const char ch in userid) {
 			if (!isalnum(ch)) {
 				return -2; 
 			}
 		}
-		//for (char& ch : domain) {
 		for each (const char ch in domain) {
 			if (!isalnum(ch) && ch != '.') {
 				return -3; 
@@ -411,4 +458,9 @@ int CMS::check_email(const string email) {
 			return 0; 
 		}
 	}
+}
+
+// 忽略大小写比较两字符串，若相等返回1，否则返回0
+int CMS::cmp_ignore_case(const string& str1, const string& str2) {
+	return !_stricmp(str1.c_str(), str2.c_str()); 
 }

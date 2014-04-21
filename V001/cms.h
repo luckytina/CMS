@@ -14,6 +14,13 @@ private:
 	vector<Person> database; 
 	size_t maxsize; 
 
+	/*
+	类内部采用三层函数调用结构设计
+	第一层为用户交互层，包括系统菜单和功能菜单，可根据用户输入调用相应功能
+	第二层为调用关系转换层，对用户的输入进行解析和定向
+	第三层为功能实现层，接受上一层的调用，完成对内存数据库的相关操作
+	*/
+
 	// 系统菜单
 	void Menu();
 
@@ -40,6 +47,7 @@ private:
 	int check_tel(const string tel); 
 	int check_pc(string& pc);
 	int check_email(const string email); 
+	int cmp_ignore_case(const string&, const string&); 
 
 protected: 
 	; 

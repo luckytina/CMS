@@ -13,7 +13,6 @@ private:
 	string pc; 
 	string email; 
 public: 
-	Person() { }
 	Person(const string name, const string tel, const string pc, const string email); 
 	~Person() { };
 
