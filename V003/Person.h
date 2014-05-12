@@ -17,8 +17,11 @@ protected:
 	string remark; // ±¸×¢
 
 public:
-	Person();
+	Person ( );
+	virtual ~Person ( );
 
+	virtual const int Set (const string& flag, const string& value) = 0; 
+	virtual const string& Get (const string& flag) const; 
 };
 
 #endif // _CMS_PERSON_H_
